@@ -1,0 +1,6 @@
+# Rename this file to setup.properties before using it
+
+apiKey=REPLACE_WITH_YOUR_FLICKR_API_KEY
+sharedSecret=REPLACE_WITH_YOUR_SHARED_SECRET
+authToken=REPLACE_WITH_YOUR_AUTH_TOKEN_WITH_WRITE_PERMISSION
+authTokenSecret=REPLACE_WITH_YOUR_TOKEN_SECRET

@@ -1,9 +1,57 @@
 <!DOCTYPE html>
-<html>
-<body>
-	<form  method="post" enctype="multipart/form-data" action="/uploadimage">
-        <input type="file" name="file" accept="image/*">
-        <input type="submit">
-	</form>
+<html ng-app="FlickrUploaderNgDirective4SparkJava">
+
+<body ng-controller="myCtrl">
+    <form ng-submit="uploadFile()">
+        <input type="file" file-model="myFile"/>
+        <input type="submit"/>
+    </form>
 </body>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.0/angular.min.js"></script>
+<script>
+
+    angular.module("FlickrUploaderNgDirective4SparkJava", [])
+
+    .directive('fileModel', ['$parse', function ($parse) {
+        return {
+            restrict: 'A',
+            link: function(scope, element, attrs) {
+                var model = $parse(attrs.fileModel);
+                var modelSetter = model.assign;
+                
+                element.bind('change', function(){
+                    scope.$apply(function(){
+                        modelSetter(scope, element[0].files[0]);
+                    });
+                });
+            }
+        };
+    }])
+
+    .service('fileUpload', ['$http', '$window', function ($http, $window) {
+        this.uploadFileToUrl = function(file, uploadUrl){
+            var fd = new FormData();
+            fd.append('file', file);
+            $http.post(uploadUrl, fd, {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined}
+            })
+            .success(function(data){
+                $window.alert(data);
+            })
+            .error(function(data){
+                $window.alert(data);
+            });
+        }
+    }])
+
+    .controller('myCtrl', ['$scope', 'fileUpload', function($scope, fileUpload){
+        $scope.uploadFile = function(){
+            var file = $scope.myFile;
+            var uploadUrl = "/imageupload";
+            fileUpload.uploadFileToUrl(file, uploadUrl);
+        };
+    }]);
+
+</script>
 </html>

@@ -13,7 +13,7 @@ import org.scribe.model.Token;
 import spark.Request;
 import spark.Response;
 import static spark.Spark.post;
-import static spark.Spark.staticFileLocation;
+import static spark.Spark.externalStaticFileLocation;
 
 import com.flickr4java.flickr.Flickr;
 import com.flickr4java.flickr.REST;
@@ -24,7 +24,6 @@ import com.flickr4java.flickr.photos.Size;
 import com.flickr4java.flickr.uploader.UploadMetaData;
 import com.flickr4java.flickr.uploader.Uploader;
 import com.google.gson.Gson;
-
 
 public class App {
 
@@ -37,8 +36,9 @@ public class App {
 	private Auth auth;
 
 	public void initRoutes() {
-		staticFileLocation("WEB-INF");
-		post("/uploadimage", (req, res) -> uploadImage(req, res),
+		// staticFileLocation("WEB-INF");
+		externalStaticFileLocation("C:\\Users\\laercio.metzner\\FlickrUploaderNgDirective4SparkJava\\FlickrUploaderNgDirective4SparkJava\\src\\main\\resources\\WEB-INF\\");
+		post("/imageupload", (req, res) -> uploadImage(req, res),
 				new Gson()::toJson);
 	}
 
@@ -55,7 +55,7 @@ public class App {
 		} catch (IOException e) {
 			throw new Exception("Error while reading setup properties: " + e);
 		}
-		flickr = new Flickr(apiKey, sharedSecret, new REST());			
+		flickr = new Flickr(apiKey, sharedSecret, new REST());
 		AuthInterface authInterface = flickr.getAuthInterface();
 		Token requestToken = new Token(authToken, authTokenSecret);
 		auth = authInterface.checkToken(requestToken);
@@ -84,7 +84,7 @@ public class App {
 					photoId);
 			return sizes;
 		}
-		throw new Exception(JETTY_MULTIPART_CONFIG  + " is not null!");
+		throw new Exception(JETTY_MULTIPART_CONFIG + " is not null!");
 	}
 
 	public static void main(String[] args) throws Exception {

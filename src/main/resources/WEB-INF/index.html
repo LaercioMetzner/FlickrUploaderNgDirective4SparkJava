@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html ng-app="FlickrUploaderNgDirective4SparkJava">
 
-<body ng-controller="myCtrl">
-    <form ng-submit="uploadFile()">
-        <input type="file" file-model="myFile"/>
-        <input type="submit"/>
-    </form>
+<body>
+    <div ng-controller="myCtrl">
+        <form ng-submit="uploadFile()">
+            <div ng-hide="imgSrc">
+                <input type="file" file-model="myFile">
+                <input type="submit">
+            </div>
+            <div ng-hide="!imgSrc">
+                <img ng-src="{{imgSrc}}">
+                <input type="button" value="Replace" ng-click="replace()">
+            </div>
+        </form>
+    </div>
 </body>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.0/angular.min.js"></script>
 <script>
@@ -28,8 +36,12 @@
         };
     }])
 
-    .service('fileUpload', ['$http', '$window', function ($http, $window) {
-        this.uploadFileToUrl = function(file, uploadUrl){
+
+    .controller('myCtrl', ['$scope', '$http', '$window', function($scope, $http, $window){
+
+        $scope.imgSrc = "";
+
+        $scope.uploadFileToUrl = function(file, uploadUrl){
             var fd = new FormData();
             fd.append('file', file);
             $http.post(uploadUrl, fd, {
@@ -37,19 +49,27 @@
                 headers: {'Content-Type': undefined}
             })
             .success(function(data){
-                $window.alert(data);
+                for (var i in data){
+                    if (data[i].label == 1){
+                        $scope.imgSrc =  data[i].source;
+                        break;
+                    }
+                }
+                //$window.alert(JSON.stringify(data));
             })
             .error(function(data){
-                $window.alert(data);
+                $window.alert(JSON.stringify(data));
             });
-        }
-    }])
+        };
 
-    .controller('myCtrl', ['$scope', 'fileUpload', function($scope, fileUpload){
         $scope.uploadFile = function(){
             var file = $scope.myFile;
             var uploadUrl = "/imageupload";
-            fileUpload.uploadFileToUrl(file, uploadUrl);
+            $scope.imgSrc = $scope.uploadFileToUrl(file, uploadUrl);
+        };
+
+        $scope.replace = function(){
+            $scope.imgSrc = "";
         };
     }]);
 

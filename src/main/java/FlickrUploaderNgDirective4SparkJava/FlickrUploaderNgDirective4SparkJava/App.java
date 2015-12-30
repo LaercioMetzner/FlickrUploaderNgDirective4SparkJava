@@ -80,6 +80,7 @@ public class App {
 			RequestContext.getRequestContext().setAuth(auth);
 			Uploader uploader = flickr.getUploader();
 			String photoId = uploader.upload(is, metaData);
+			System.out.println(photoId);
 			Collection<Size> sizes = flickr.getPhotosInterface().getSizes(
 					photoId);
 			return sizes;
